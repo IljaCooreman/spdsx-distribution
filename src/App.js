@@ -1,12 +1,72 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import screen from "./img/spdsx-wave-manager-screen.png";
-// import { getOs } from "./getOs";
+import { getOs, osMap } from "./getOs";
 
 function App() {
-  // const os = getOs();
-  const baseUrl =
-    "https://www.dropbox.com/sh/jnfq7ibugoe6bwr/AAAq30kSy1db24b1afCqh94ba?dl=0";
+  const [manifest, setmanifest] = useState(undefined);
+  const [links, setlinks] = useState(undefined);
+
+  useEffect(() => {
+    fetch(process.env.REACT_APP_MANIFEST_URL)
+      .then(res => res.json())
+      .then(data => setmanifest(data))
+      .catch(e => console.log(e));
+  }, []);
+
+  useEffect(() => {
+    if (manifest) {
+      const os = getOs();
+      console.log(os);
+      switch (os) {
+        case osMap.macOs:
+          setlinks({
+            main: {
+              platform: osMap.macOs,
+              url: manifest.latest.downloadUrlMac,
+            },
+            other: [
+              {
+                platform: osMap.windows,
+                url: manifest.latest.downloadUrlPc,
+              },
+            ],
+          });
+          break;
+        case osMap.windows:
+          setlinks({
+            main: {
+              platform: osMap.windows,
+              url: manifest.latest.downloadUrlPc,
+            },
+            other: [
+              {
+                platform: osMap.macos,
+                url: manifest.latest.downloadUrlMac,
+              },
+            ],
+          });
+          break;
+        default:
+          setlinks({
+            main: {
+              platform: osMap.windows,
+              url: manifest.latest.downloadUrlPc,
+            },
+            other: [
+              {
+                platform: osMap.macOs,
+                url: manifest.latest.downloadUrlMac,
+              },
+            ],
+          });
+          break;
+      }
+    }
+  }, [manifest]);
+
+  console.log(manifest, links);
+
   // const macFileName = "SPD-SX wave manager.dmg";
   // const windowsFileName = "SPD-SX wave manager Setup.exe";
 
@@ -16,9 +76,23 @@ function App() {
         <h1>SPD-SX wave manager</h1>
         <h2>Free alternative for the Roland SPD-SX software</h2>
         <br />
-        <button className="download-button" onClick="">
-          <a href={baseUrl}>Go to download page</a>
-        </button>
+        {manifest && links && (
+          <button className="download-button">
+            <a target="_blank" rel="noopener noreferrer" href={links.main.url}>
+              Download v{manifest.latest.version} ({links.main.platform})
+            </a>
+          </button>
+        )}
+
+        <div className="linkList">
+          {manifest &&
+            links &&
+            links.other.map(link => (
+              <a target="_blank" rel="noopener noreferrer" href={link.url}>
+                Download v{manifest.latest.version} ({link.platform})
+              </a>
+            ))}
+        </div>
       </header>
       <p>
         This software makes it easy to manage audio files on your Roland SPD-SX
@@ -40,8 +114,8 @@ function App() {
         alt="spdsx-wave-manager screen"
       />
       <p>
-        PS: I didn't waste time creating this website. The software itself
-        deserves all of my love
+        PS: I didn't waste time creating this website. That's why it's a bit
+        ugly :D The software itself deserves all of my love
       </p>
       <footer>
         <h2>Contact</h2>

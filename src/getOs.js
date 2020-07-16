@@ -7,7 +7,7 @@ export function getOs() {
     os = null;
 
   if (macosPlatforms.indexOf(platform) !== -1) {
-    os = osMap.ios;
+    os = osMap.macOs;
   } else if (iosPlatforms.indexOf(platform) !== -1) {
     os = osMap.ios;
   } else if (windowsPlatforms.indexOf(platform) !== -1) {

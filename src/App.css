@@ -61,3 +61,7 @@ header {
     transform: rotate(360deg);
   }
 }
+
+.linkList {
+  margin: 12px;
+}
