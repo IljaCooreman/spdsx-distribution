@@ -78,7 +78,7 @@ function App() {
         <br />
         {manifest && links && (
           <button className="download-button">
-            <a target="_blank" rel="noopener noreferrer" href={links.main.url}>
+            <a target="_self" rel="noopener noreferrer" href={links.main.url}>
               Download v{manifest.latest.version} ({links.main.platform})
             </a>
           </button>
@@ -88,7 +88,7 @@ function App() {
           {manifest &&
             links &&
             links.other.map(link => (
-              <a target="_blank" rel="noopener noreferrer" href={link.url}>
+              <a target="_self" href={link.url}>
                 Download v{manifest.latest.version} ({link.platform})
               </a>
             ))}
